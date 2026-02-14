@@ -2,14 +2,21 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase, isSupabaseConfigured } from "@/lib/auth/supabase";
 
-type Provider = "google" | "twitter";
+// Extend Provider type to support Google and Microsoft (Azure).
+// Removed Twitter (X) provider and added Azure for Microsoft login.
+type Provider = "google" | "azure";
 
 type AuthState = {
   configured: boolean;
   loading: boolean;
   session: Session | null;
   user: User | null;
-  signInWithProvider: (provider: Provider) => Promise<{ ok: boolean; error?: string }>; 
+  signInWithProvider: (provider: Provider) => Promise<{ ok: boolean; error?: string }>;
+  /**
+   * Send a magic link to the provided email address. Users receive a link
+   * in their inbox and sign in by clicking it. This creates an account on first use.
+   */
+  signInWithEmail: (email: string) => Promise<{ ok: boolean; error?: string }>;
   signOut: () => Promise<void>;
 };
 
@@ -53,7 +60,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithProvider = useCallback(async (provider: Provider) => {
     if (!supabase) return { ok: false, error: "Login não configurado." };
     try {
-      // Guardamos para onde o usuário queria ir, assim depois do login ele volta.
       const last = window.location.pathname + window.location.search + window.location.hash;
       window.sessionStorage.setItem("prontopdf.auth.returnTo", last);
 
@@ -71,6 +77,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const signInWithEmail = useCallback(async (email: string) => {
+    if (!supabase) return { ok: false, error: "Login não configurado." };
+    try {
+      const redirectTo = `${window.location.origin}/auth/callback`;
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: redirectTo,
+        },
+      });
+      if (error) return { ok: false, error: error.message };
+      return { ok: true };
+    } catch (e: any) {
+      return { ok: false, error: e?.message ?? "Falha ao enviar link de login." };
+    }
+  }, []);
+
   const signOut = useCallback(async () => {
     if (!supabase) return;
     await supabase.auth.signOut();
@@ -83,9 +106,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       session,
       user,
       signInWithProvider,
+      signInWithEmail,
       signOut,
     }),
-    [loading, session, user, signInWithProvider, signOut]
+    [loading, session, user, signInWithProvider, signInWithEmail, signOut]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -100,6 +124,7 @@ export function useAuth() {
       session: null,
       user: null,
       signInWithProvider: async () => ({ ok: false, error: "AuthProvider não encontrado." }),
+      signInWithEmail: async () => ({ ok: false, error: "AuthProvider não encontrado." }),
       signOut: async () => {},
     } as AuthState;
   }

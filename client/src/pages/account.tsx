@@ -14,11 +14,22 @@ function formatKind(item: CloudItem) {
 }
 
 export default function Account() {
-  const { configured, loading, user, signInWithProvider, signOut } = useAuth();
+  const {
+    configured,
+    loading,
+    user,
+    signInWithProvider,
+    signInWithEmail,
+    signOut,
+  } = useAuth();
   const { toast } = useToast();
   const [items, setItems] = useState<CloudItem[]>([]);
   const [listing, setListing] = useState(false);
   const [actionBusy, setActionBusy] = useState<string | null>(null);
+
+  // Estado do formulário de login por e-mail.
+  const [emailInput, setEmailInput] = useState("");
+  const [emailSent, setEmailSent] = useState(false);
 
   const userId = user?.id;
 
@@ -69,7 +80,6 @@ export default function Account() {
       const blob = await cloudDownload(item.path);
       const newId = await importProjectBundle(blob);
       toast({ title: "Importado", description: "Documento adicionado em Arquivos." });
-      // opcional: poderia navegar para o doc, mas deixamos simples.
       console.log("Imported project", newId);
     } catch (e: any) {
       toast({ title: "Falha ao importar", description: e?.message ?? "Tente novamente." });
@@ -91,6 +101,22 @@ export default function Account() {
     }
   };
 
+  const handleEmailLogin = async () => {
+    setEmailSent(false);
+    const email = emailInput.trim();
+    if (!email) {
+      toast({ title: "Informe um e-mail válido." });
+      return;
+    }
+    const { ok, error } = await signInWithEmail(email);
+    if (ok) {
+      setEmailSent(true);
+      setEmailInput("");
+    } else {
+      toast({ title: "Falha ao enviar o link", description: error ?? "Tente novamente." });
+    }
+  };
+
   return (
     <AppShell>
       <div className="mx-auto max-w-md p-4 space-y-4">
@@ -109,7 +135,7 @@ export default function Account() {
               Para ativar, crie um projeto no Supabase e configure as variáveis <code>VITE_SUPABASE_URL</code> e <code>VITE_SUPABASE_ANON_KEY</code> no Netlify.
             </p>
             <p className="text-muted-foreground">
-              Depois disso, você habilita os provedores Google e/ou X (Twitter) no painel do Supabase.
+              Depois disso, habilite os provedores Google e Microsoft no painel do Supabase ou use login por e-mail.
             </p>
           </Card>
         ) : loading ? (
@@ -121,11 +147,29 @@ export default function Account() {
             </p>
 
             <div className="grid gap-2">
-              <Button onClick={() => signInWithProvider("google")}>
+              {/* Login via e-mail (magic link) */}
+              <div className="grid gap-1">
+                <input
+                  type="email"
+                  value={emailInput}
+                  onChange={(e) => setEmailInput(e.target.value)}
+                  placeholder="Seu e-mail"
+                  className="border border-border rounded-md px-3 py-2 text-sm"
+                />
+                <Button onClick={handleEmailLogin}>
+                  <LogIn className="h-4 w-4 mr-2" /> Entrar com e-mail
+                </Button>
+                {emailSent && (
+                  <p className="text-xs text-muted-foreground">
+                    Link enviado! Verifique sua caixa de entrada e siga o link para entrar.
+                  </p>
+                )}
+              </div>
+              <Button onClick={() => signInWithProvider("google")}> 
                 <LogIn className="h-4 w-4 mr-2" /> Entrar com Google
               </Button>
-              <Button variant="outline" onClick={() => signInWithProvider("twitter")}>
-                <LogIn className="h-4 w-4 mr-2" /> Entrar com X
+              <Button variant="outline" onClick={() => signInWithProvider("azure")}> 
+                <LogIn className="h-4 w-4 mr-2" /> Entrar com Microsoft
               </Button>
             </div>
 
@@ -168,7 +212,10 @@ export default function Account() {
                 ) : (
                   <div className="space-y-2">
                     {grouped.pdfs.map((it) => (
-                      <div key={it.path} className="flex items-center justify-between gap-2 rounded border border-border bg-white px-3 py-2">
+                      <div
+                        key={it.path}
+                        className="flex items-center justify-between gap-2 rounded border border-border bg-white px-3 py-2"
+                      >
                         <div className="min-w-0">
                           <p className="text-sm font-medium truncate">{it.name}</p>
                           <p className="text-xs text-muted-foreground">{formatKind(it)}</p>
@@ -194,16 +241,15 @@ export default function Account() {
                 ) : (
                   <div className="space-y-2">
                     {grouped.bundles.map((it) => (
-                      <div key={it.path} className="flex items-center justify-between gap-2 rounded border border-border bg-white px-3 py-2">
+                      <div
+                        key={it.path}
+                        className="flex items-center justify-between gap-2 rounded border border-border bg-white px-3 py-2"
+                      >
                         <div className="min-w-0">
                           <p className="text-sm font-medium truncate">{it.name}</p>
                           <p className="text-xs text-muted-foreground">{formatKind(it)}</p>
                         </div>
-                        <Button
-                          size="sm"
-                          onClick={() => handleImport(it)}
-                          disabled={actionBusy === it.path}
-                        >
+                        <Button size="sm" onClick={() => handleImport(it)} disabled={actionBusy === it.path}>
                           <FileDown className="h-4 w-4 mr-2" /> Importar
                         </Button>
                       </div>

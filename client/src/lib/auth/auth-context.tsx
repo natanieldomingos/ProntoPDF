@@ -2,10 +2,8 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase, isSupabaseConfigured } from "@/lib/auth/supabase";
 
-// Provedores suportados no app.
-// - google: Entrar com Google
-// - azure: Entrar com Microsoft (Entra ID)
-// Removido: twitter (X)
+// Extend Provider type to support Google and Microsoft (Azure).
+// Removed Twitter (X) provider and added Azure for Microsoft login.
 type Provider = "google" | "azure";
 
 type AuthState = {
@@ -13,9 +11,10 @@ type AuthState = {
   loading: boolean;
   session: Session | null;
   user: User | null;
-  signInWithProvider: (provider: Provider) => Promise<{ ok: boolean; error?: string }>; 
+  signInWithProvider: (provider: Provider) => Promise<{ ok: boolean; error?: string }>;
   /**
-   * Login por e-mail via link (magic link). Funciona para qualquer pessoa, sem rede social.
+   * Send a magic link to the provided email address. Users receive a link
+   * in their inbox and sign in by clicking it. This creates an account on first use.
    */
   signInWithEmail: (email: string) => Promise<{ ok: boolean; error?: string }>;
   signOut: () => Promise<void>;
@@ -61,7 +60,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithProvider = useCallback(async (provider: Provider) => {
     if (!supabase) return { ok: false, error: "Login não configurado." };
     try {
-      // Guardamos para onde o usuário queria ir, assim depois do login ele volta.
       const last = window.location.pathname + window.location.search + window.location.hash;
       window.sessionStorage.setItem("prontopdf.auth.returnTo", last);
 
@@ -70,13 +68,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         provider,
         options: {
           redirectTo,
-          // Para Microsoft (Azure), pedir e-mail ajuda a evitar contas sem e-mail retornado.
-          ...(provider === "azure"
-            ? {
-                scopes: "openid profile email",
-                queryParams: { prompt: "select_account" },
-              }
-            : {}),
         },
       });
       if (error) return { ok: false, error: error.message };
@@ -89,9 +80,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithEmail = useCallback(async (email: string) => {
     if (!supabase) return { ok: false, error: "Login não configurado." };
     try {
-      const last = window.location.pathname + window.location.search + window.location.hash;
-      window.sessionStorage.setItem("prontopdf.auth.returnTo", last);
-
       const redirectTo = `${window.location.origin}/auth/callback`;
       const { error } = await supabase.auth.signInWithOtp({
         email,

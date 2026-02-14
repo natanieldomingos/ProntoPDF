@@ -1,0 +1,7 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1400' height='1900' viewBox='0 0 1400 1900'>
+  <rect width='1400' height='1900' fill='#f2ede4'/>
+  <rect x='70' y='70' width='1260' height='1760' fill='none' stroke='#756d60' stroke-width='6'/>
+  <text x='120' y='115' font-size='36' font-family='Arial, sans-serif' font-weight='700' fill='#303030'>PRONTO PDF - SAMPLE</text>
+  <text x='120' y='190' font-size='48' font-family='Arial, sans-serif' font-weight='700' fill='#202020'>RECIBO</text> <text x='120' y='275' font-size='36' font-family='Arial, sans-serif' font-weight='400' fill='#202020'>Recebi de João P. a quantia de</text> <text x='120' y='360' font-size='36' font-family='Arial, sans-serif' font-weight='400' fill='#202020'>R$ 350,00 referente a manutenção.</text> <text x='120' y='445' font-size='36' font-family='Arial, sans-serif' font-weight='400' fill='#202020'>Data: 21/11/2026</text>
+  <text x='120' y='1760' font-size='28' font-family='Arial, sans-serif' fill='#555'>Arquivo: doc-recibo-movel.svg</text>
+</svg>

@@ -1,0 +1,59 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme inline {
+  --color-background: hsl(0 0% 98%);
+  --color-foreground: hsl(0 0% 10%);
+  
+  --color-primary: hsl(0 72% 51%); /* Swiss Red */
+  --color-primary-foreground: hsl(0 0% 100%);
+  
+  --color-secondary: hsl(0 0% 90%);
+  --color-secondary-foreground: hsl(0 0% 10%);
+  
+  --color-muted: hsl(0 0% 96%);
+  --color-muted-foreground: hsl(0 0% 45%);
+  
+  --color-accent: hsl(0 0% 94%);
+  --color-accent-foreground: hsl(0 0% 10%);
+  
+  --color-destructive: hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(0 0% 98%);
+
+  --color-border: hsl(0 0% 88%);
+  --color-input: hsl(0 0% 88%);
+  --color-ring: hsl(0 72% 51%);
+  
+  --radius: 0rem; /* Sharp corners for Swiss Style */
+  
+  --font-sans: 'Inter', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply font-sans antialiased bg-background text-foreground selection:bg-primary/20;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+}
+
+/* Custom Utilities for the Swiss/Industrial look */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Paper shadow effect */
+  .shadow-paper {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05), 0 0 0 1px rgb(0 0 0 / 0.02);
+  }
+
+  .perspective-container {
+    perspective: 1000px;
+  }
+}

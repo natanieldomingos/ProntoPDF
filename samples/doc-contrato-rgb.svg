@@ -1,0 +1,7 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1400' height='1900' viewBox='0 0 1400 1900'>
+  <rect width='1400' height='1900' fill='#f2ede4'/>
+  <rect x='70' y='70' width='1260' height='1760' fill='none' stroke='#756d60' stroke-width='6'/>
+  <text x='120' y='115' font-size='36' font-family='Arial, sans-serif' font-weight='700' fill='#303030'>PRONTO PDF - SAMPLE</text>
+  <text x='120' y='190' font-size='48' font-family='Arial, sans-serif' font-weight='700' fill='#202020'>CONTRATO DE PRESTAÇÃO</text> <text x='120' y='275' font-size='36' font-family='Arial, sans-serif' font-weight='400' fill='#202020'>Partes: Empresa X / Fornecedor Y</text> <text x='120' y='360' font-size='36' font-family='Arial, sans-serif' font-weight='400' fill='#202020'>Cláusula 4: Prazo de 12 meses</text> <text x='120' y='445' font-size='36' font-family='Arial, sans-serif' font-weight='400' fill='#202020'>Assinatura: __________________</text>
+  <text x='120' y='1760' font-size='28' font-family='Arial, sans-serif' fill='#555'>Arquivo: doc-contrato-rgb.svg</text>
+</svg>

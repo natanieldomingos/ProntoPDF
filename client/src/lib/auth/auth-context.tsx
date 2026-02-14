@@ -71,7 +71,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         options: {
           redirectTo,
           // Para Microsoft (Azure), pedir e-mail ajuda a evitar contas sem e-mail retornado.
-          ...(provider === "azure" ? { scopes: "email" } : {}),
+          ...(provider === "azure"
+            ? {
+                scopes: "openid profile email",
+                queryParams: { prompt: "select_account" },
+              }
+            : {}),
         },
       });
       if (error) return { ok: false, error: error.message };

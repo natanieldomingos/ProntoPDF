@@ -8,6 +8,7 @@ export default function AuthCallback() {
 
   useEffect(() => {
     let alive = true;
+
     const run = async () => {
       try {
         if (!supabase) {
@@ -15,25 +16,57 @@ export default function AuthCallback() {
           return;
         }
 
-        // Em SPA, detectSessionInUrl já tenta capturar a sessão.
-        // Aqui só esperamos a sessão aparecer e então voltamos.
-        const { data } = await supabase.auth.getSession();
-        if (!alive) return;
+        // Se o provedor usou OAuth Code Flow (comum no Microsoft),
+        // precisamos trocar o `code` por uma sessão.
+        const url = new URL(window.location.href);
 
-        if (!data.session) {
-          setMsg("Quase lá…");
-          // Dá um tempinho para o redirect terminar de gravar os tokens.
-          await new Promise((r) => setTimeout(r, 300));
+        const oauthError =
+          url.searchParams.get("error_description") ||
+          url.searchParams.get("error") ||
+          null;
+
+        if (oauthError) {
+          setMsg("Não foi possível finalizar o login.");
+          console.error("OAuth error:", oauthError);
+          return;
         }
 
-        const returnTo = window.sessionStorage.getItem("prontopdf.auth.returnTo") || "/account";
-        window.sessionStorage.removeItem("prontopdf.auth.returnTo");
-        if (alive) setLocation(returnTo);
+        const code = url.searchParams.get("code");
+        if (code) {
+          setMsg("Confirmando acesso…");
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) {
+            console.error(error);
+            setMsg("Não foi possível finalizar o login. Tente novamente.");
+            return;
+          }
+        }
+
+        // Agora esperamos a sessão estar disponível.
+        // Em alguns navegadores o storage/evento pode demorar alguns ms.
+        for (let i = 0; i < 10; i++) {
+          const { data } = await supabase.auth.getSession();
+          if (!alive) return;
+
+          if (data.session) {
+            const returnTo =
+              window.sessionStorage.getItem("prontopdf.auth.returnTo") || "/account";
+            window.sessionStorage.removeItem("prontopdf.auth.returnTo");
+            if (alive) setLocation(returnTo);
+            return;
+          }
+
+          setMsg("Quase lá…");
+          await new Promise((r) => setTimeout(r, 250));
+        }
+
+        setMsg("Não foi possível criar a sessão. Tente entrar novamente.");
       } catch (e) {
         console.error(e);
         if (alive) setMsg("Não foi possível finalizar o login. Tente novamente.");
       }
     };
+
     run();
     return () => {
       alive = false;

@@ -60,11 +60,11 @@ Para rotas client-side funcionarem em refresh/deep-link, mantenha o arquivo de r
 
 ---
 
-## Login com Google/X + acesso em vários dispositivos (Supabase)
+## Login por e-mail + Google/Microsoft + acesso em vários dispositivos (Supabase)
 
 O app tem uma aba **Conta** que permite:
 
-- Entrar com **Google** ou **X (Twitter)**
+- Entrar com **e-mail (link mágico)**, **Google** ou **Microsoft**
 - Salvar **PDFs** na nuvem e baixar depois no PC
 - Salvar um **Projeto editável** (pacote `.zip`) para importar e continuar editando em outro aparelho
 
@@ -79,13 +79,14 @@ O app tem uma aba **Conta** que permite:
 
 No painel do Supabase, em **Authentication → Providers**, habilite:
 
+- **Email** (para login por link/magic link)
 - **Google**
-- **Twitter (X)**
+- **Azure** (Microsoft)
 
 Adicione as Redirect URLs (exemplos):
 
 - `https://SEU-SITE.netlify.app/auth/callback`
-- `http://localhost:5000/auth/callback`
+- `http://localhost:5173/auth/callback`
 
 ### 3) Criar bucket de Storage
 
@@ -110,6 +111,7 @@ create policy "read own prontopdf files"
 on storage.objects for select
 using (
   bucket_id = 'prontopdf'
+  and storage.foldername(name)[1] = 'users'
   and storage.foldername(name)[2] = auth.uid()::text
 );
 
@@ -118,6 +120,7 @@ create policy "insert own prontopdf files"
 on storage.objects for insert
 with check (
   bucket_id = 'prontopdf'
+  and storage.foldername(name)[1] = 'users'
   and storage.foldername(name)[2] = auth.uid()::text
 );
 
@@ -126,10 +129,12 @@ create policy "update own prontopdf files"
 on storage.objects for update
 using (
   bucket_id = 'prontopdf'
+  and storage.foldername(name)[1] = 'users'
   and storage.foldername(name)[2] = auth.uid()::text
 )
 with check (
   bucket_id = 'prontopdf'
+  and storage.foldername(name)[1] = 'users'
   and storage.foldername(name)[2] = auth.uid()::text
 );
 
@@ -138,6 +143,7 @@ create policy "delete own prontopdf files"
 on storage.objects for delete
 using (
   bucket_id = 'prontopdf'
+  and storage.foldername(name)[1] = 'users'
   and storage.foldername(name)[2] = auth.uid()::text
 );
 ```

@@ -334,7 +334,13 @@
   }
 
   .state-layer {
-    @apply relative before:absolute before:inset-0 before:rounded-inherit before:bg-current before:opacity-0 transition-all;
+    @apply relative before:absolute before:inset-0 before:bg-current before:opacity-0 transition-all;
+    border-radius: inherit;
+    
+    &::before {
+      border-radius: inherit;
+    }
+    
     &:hover::before {
       @apply opacity-8;
     }

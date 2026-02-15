@@ -1,59 +1,342 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* ============================================
+   MATERIAL 3 DESIGN TOKENS (Light Mode)
+   ============================================ */
 @theme inline {
+  /* Light Mode Colors (Material 3) */
   --color-background: hsl(0 0% 98%);
   --color-foreground: hsl(0 0% 10%);
   
-  --color-primary: hsl(0 72% 51%); /* Swiss Red */
-  --color-primary-foreground: hsl(0 0% 100%);
+  /* Primary: Swiss Red (Core Brand) */
+  --color-primary: hsl(0 72% 51%);
+  --color-on-primary: hsl(0 0% 100%);
+  --color-primary-container: hsl(0 100% 93%);
+  --color-on-primary-container: hsl(0 72% 40%);
   
-  --color-secondary: hsl(0 0% 90%);
-  --color-secondary-foreground: hsl(0 0% 10%);
+  /* Secondary: Neutral Gray */
+  --color-secondary: hsl(0 0% 70%);
+  --color-on-secondary: hsl(0 0% 100%);
+  --color-secondary-container: hsl(0 0% 96%);
+  --color-on-secondary-container: hsl(0 0% 30%);
   
+  /* Tertiary: Cool accent (optional) */
+  --color-tertiary: hsl(200 70% 50%);
+  --color-on-tertiary: hsl(0 0% 100%);
+  --color-tertiary-container: hsl(200 70% 90%);
+  --color-on-tertiary-container: hsl(200 70% 35%);
+  
+  /* Surface & Text */
+  --color-surface: hsl(0 0% 100%);
+  --color-on-surface: hsl(0 0% 10%);
+  --color-surface-variant: hsl(0 0% 90%);
+  --color-on-surface-variant: hsl(0 0% 40%);
+  
+  /* Outline & Borders */
+  --color-outline: hsl(0 0% 50%);
+  --color-outline-variant: hsl(0 0% 80%);
+  
+  /* Error & Status */
+  --color-error: hsl(3 90% 63%);
+  --color-on-error: hsl(0 0% 100%);
+  --color-error-container: hsl(3 100% 93%);
+  --color-on-error-container: hsl(3 85% 52%);
+  
+  /* Semantic aliases for shadcn compatibility */
   --color-muted: hsl(0 0% 96%);
   --color-muted-foreground: hsl(0 0% 45%);
-  
-  --color-accent: hsl(0 0% 94%);
-  --color-accent-foreground: hsl(0 0% 10%);
-  
-  --color-destructive: hsl(0 84% 60%);
-  --color-destructive-foreground: hsl(0 0% 98%);
-
+  --color-accent: hsl(200 70% 50%); /* Tertiary */
+  --color-accent-foreground: hsl(0 0% 100%);
+  --color-destructive: hsl(3 90% 63%);
+  --color-destructive-foreground: hsl(0 0% 100%);
   --color-border: hsl(0 0% 88%);
-  --color-input: hsl(0 0% 88%);
-  --color-ring: hsl(0 72% 51%);
+  --color-input: hsl(0 0% 95%);
+  --color-ring: hsl(0 72% 51%); /* Primary focus */
   
-  --radius: 0rem; /* Sharp corners for Swiss Style */
+  /* Typography (Material 3 style) */
+  --font-sans: 'Roboto', 'Inter', system-ui, sans-serif;
+  --font-mono: 'Roboto Mono', 'Monaco', monospace;
   
-  --font-sans: 'Inter', sans-serif;
-  --font-display: 'Space Grotesk', sans-serif;
+  /* Corner Radius (Material 3: slightly rounded) */
+  --radius: 0.75rem; /* 12px - Material 3 default */
+  --radius-sm: 0.25rem; /* 4px */
+  --radius-md: 0.5rem; /* 8px */
+  --radius-lg: 1rem; /* 16px */
+  --radius-xl: 1.5rem; /* 24px */
+  --radius-2xl: 2rem; /* 32px */
+}
+
+/* Dark Mode (via prefers-color-scheme) */
+@supports (color: hsl(0 0% 0%)) {
+  @media (prefers-color-scheme: dark) {
+    @theme {
+      /* Dark Mode Colors */
+      --color-background: hsl(0 0% 6%);
+      --color-foreground: hsl(0 0% 97%);
+      
+      --color-primary: hsl(0 72% 65%);
+      --color-on-primary: hsl(0 90% 16%);
+      --color-primary-container: hsl(0 90% 30%);
+      --color-on-primary-container: hsl(0 100% 93%);
+      
+      --color-secondary: hsl(0 0% 80%);
+      --color-on-secondary: hsl(0 0% 20%);
+      --color-secondary-container: hsl(0 0% 35%);
+      --color-on-secondary-container: hsl(0 0% 96%);
+      
+      --color-tertiary: hsl(200 70% 70%);
+      --color-on-tertiary: hsl(200 70% 20%);
+      --color-tertiary-container: hsl(200 70% 30%);
+      --color-on-tertiary-container: hsl(200 70% 90%);
+      
+      --color-surface: hsl(0 0% 12%);
+      --color-on-surface: hsl(0 0% 97%);
+      --color-surface-variant: hsl(0 0% 30%);
+      --color-on-surface-variant: hsl(0 0% 70%);
+      
+      --color-outline: hsl(0 0% 60%);
+      --color-outline-variant: hsl(0 0% 35%);
+      
+      --color-error: hsl(3 90% 75%);
+      --color-on-error: hsl(3 90% 16%);
+      --color-error-container: hsl(3 85% 30%);
+      --color-on-error-container: hsl(3 100% 93%);
+      
+      --color-muted: hsl(0 0% 25%);
+      --color-muted-foreground: hsl(0 0% 65%);
+      --color-accent: hsl(200 70% 65%);
+      --color-accent-foreground: hsl(200 70% 10%);
+      --color-border: hsl(0 0% 25%);
+      --color-input: hsl(0 0% 20%);
+    }
+  }
 }
 
 @layer base {
+  /* Global styles */
   * {
     @apply border-border;
   }
-  body {
-    @apply font-sans antialiased bg-background text-foreground selection:bg-primary/20;
+  
+  html {
+    /* Smooth color transitions for light/dark */
+    color-scheme: light dark;
   }
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-display tracking-tight;
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    transition: background-color 200ms, color 200ms;
+  }
+
+  /* Typography Scale (Material 3) */
+  h1 {
+    @apply text-4xl font-bold leading-tight tracking-[-0.5px];
+    /* Display Large */
+  }
+
+  h2 {
+    @apply text-3xl font-semibold leading-snug tracking-normal;
+    /* Headline Large */
+  }
+
+  h3 {
+    @apply text-2xl font-semibold leading-snug;
+    /* Headline Medium */
+  }
+
+  h4 {
+    @apply text-lg font-semibold leading-normal;
+    /* Headline Small */
+  }
+
+  h5 {
+    @apply text-base font-semibold leading-normal;
+    /* Title Large */
+  }
+
+  h6 {
+    @apply text-sm font-semibold leading-normal;
+    /* Title Medium */
+  }
+
+  /* Body text scales */
+  p {
+    @apply text-base leading-relaxed;
+    /* Body Large */
+  }
+
+  small {
+    @apply text-sm leading-normal;
+    /* Body Small */
+  }
+
+  /* Link styling */
+  a {
+    @apply text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded transition-colors;
+  }
+
+  /* Selection */
+  ::selection {
+    @apply bg-primary/20 text-inherit;
+  }
+
+  /* Focus visible (accessibility) */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
+
+  /* Form elements base styling */
+  input,
+  textarea,
+  select {
+    @apply rounded-md border border-input bg-surface text-foreground transition-colors;
+    &:focus {
+      @apply border-primary outline-none;
+    }
+  }
+
+  button {
+    @apply transition-all duration-150;
   }
 }
 
-/* Custom Utilities for the Swiss/Industrial look */
+/* ============================================
+   MATERIAL 3 COMPONENT UTILITIES
+   ============================================ */
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-  
-  /* Paper shadow effect */
-  .shadow-paper {
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05), 0 0 0 1px rgb(0 0 0 / 0.02);
+  /* Elevation/Shadow system (Material 3) */
+  .shadow-elevation-0 {
+    box-shadow: none;
   }
 
-  .perspective-container {
-    perspective: 1000px;
+  .shadow-elevation-1 {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+  }
+
+  .shadow-elevation-2 {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+  }
+
+  .shadow-elevation-3 {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 3px 6px 3px rgba(0, 0, 0, 0.15);
+  }
+
+  .shadow-elevation-4 {
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3), 0 6px 10px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  .shadow-elevation-5 {
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.3), 0 8px 12px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Text scaling utilities */
+  .text-display-large {
+    @apply text-5xl font-bold tracking-[-1px] leading-[3.5rem];
+  }
+
+  .text-display-medium {
+    @apply text-4xl font-bold tracking-normal leading-[2.5rem];
+  }
+
+  .text-display-small {
+    @apply text-3xl font-bold tracking-normal leading-[2.5rem];
+  }
+
+  .text-headline-large {
+    @apply text-3xl font-bold tracking-normal leading-[2.5rem];
+  }
+
+  .text-headline-medium {
+    @apply text-2xl font-bold tracking-normal leading-[2rem];
+  }
+
+  .text-headline-small {
+    @apply text-xl font-bold tracking-normal leading-[1.75rem];
+  }
+
+  .text-title-large {
+    @apply text-lg font-bold tracking-normal leading-[1.75rem];
+  }
+
+  .text-title-medium {
+    @apply text-base font-semibold tracking-[0.15px] leading-[1.5rem];
+  }
+
+  .text-title-small {
+    @apply text-sm font-semibold tracking-[0.1px] leading-[1.25rem];
+  }
+
+  .text-body-large {
+    @apply text-base tracking-[0.15px] leading-[1.5rem];
+  }
+
+  .text-body-medium {
+    @apply text-sm tracking-[0.25px] leading-[1.25rem];
+  }
+
+  .text-body-small {
+    @apply text-xs tracking-[0.4px] leading-[1rem];
+  }
+
+  .text-label-large {
+    @apply text-sm font-semibold tracking-[0.1px] leading-[1.25rem];
+  }
+
+  .text-label-medium {
+    @apply text-xs font-semibold tracking-[0.5px] leading-[1rem];
+  }
+
+  .text-label-small {
+    @apply text-xs font-semibold tracking-[0.5px] leading-[1rem];
+  }
+
+  /* Interactive state helpers */
+  .hover-lift {
+    @apply transition-all duration-200 hover:shadow-elevation-3 hover:-translate-y-0.5;
+  }
+
+  .state-layer {
+    @apply relative before:absolute before:inset-0 before:rounded-inherit before:bg-current before:opacity-0 transition-all;
+    &:hover::before {
+      @apply opacity-8;
+    }
+    &:active::before {
+      @apply opacity-12;
+    }
+  }
+
+  /* Container queries fallback */
+  .card-base {
+    @apply bg-surface border border-outline-variant rounded-lg shadow-elevation-1;
+  }
+
+  /* Accessibility helpers */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Touch target minimum (48x48 for accessibility) */
+  .touch-target {
+    @apply p-3 rounded-full;
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }

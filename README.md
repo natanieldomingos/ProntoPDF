@@ -43,20 +43,31 @@ npm run build:client
 
 A saída é gerada em `dist/public`.
 
-## Deploy na Netlify
+## Deploy no Cloudflare Pages
 
 ### Configuração de build
 
 - **Build command**: `npm run build:client`
-- **Publish directory**: `dist/public`
+- **Build output directory**: `dist/public`
+- **Node.js version**: 22.x ou superior
+
+### Passo a passo
+
+1. Conecte seu repositório Git ao Cloudflare Pages
+2. Configure a variável de ambiente `Node_ENV` como `production`
+3. O Cloudflare automaticamente detectará o build command e output directory via `wrangler.toml`
+4. As redireções SPA estão configuradas em `client/public/_redirects`
+5. Os headers de segurança estão em `client/public/_headers`
 
 ### SPA redirects
 
-Para rotas client-side funcionarem em refresh/deep-link, mantenha o arquivo de redirects:
+Para rotas client-side funcionarem em refresh/deep-link:
 
 ```txt
 /* /index.html 200
 ```
+
+Este arquivo já existe em `client/public/_redirects`.
 
 ---
 
@@ -85,7 +96,7 @@ No painel do Supabase, em **Authentication → Providers**, habilite:
 
 Adicione as Redirect URLs (exemplos):
 
-- `https://SEU-SITE.netlify.app/auth/callback`
+- `https://seu-site.pages.dev/auth/callback`
 - `http://localhost:5173/auth/callback`
 
 ### 3) Criar bucket de Storage
@@ -148,17 +159,15 @@ using (
 );
 ```
 
-### 5) Variáveis de ambiente (Netlify)
+### 5) Variáveis de ambiente (Cloudflare Pages)
 
-No Netlify (Site settings → Environment variables):
+No Cloudflare Pages (Settings → Environment variables):
 
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
 - (opcional) `VITE_SUPABASE_BUCKET` (padrão: `prontopdf`)
 
-Pronto: a aba **Conta** passa a funcionar.
-
-Este projeto já inclui `client/public/_redirects`, que deve ser publicado junto ao build.
+Proto: a aba **Conta** passa a funcionar.
 
 ## Samples para testes desktop
 

@@ -132,7 +132,7 @@ export default function Account() {
           <Card className="p-4 text-sm space-y-2">
             <p className="font-semibold">Login ainda não está ligado neste site.</p>
             <p className="text-muted-foreground">
-              Para ativar, crie um projeto no Supabase e configure as variáveis <code>VITE_SUPABASE_URL</code> e <code>VITE_SUPABASE_ANON_KEY</code> no Netlify.
+              Para ativar, crie um projeto no Supabase e configure as variáveis <code>VITE_SUPABASE_URL</code> e <code>VITE_SUPABASE_ANON_KEY</code> no Cloudflare Pages.
             </p>
             <p className="text-muted-foreground">
               Depois disso, habilite os provedores Google e Microsoft no painel do Supabase ou use login por e-mail.

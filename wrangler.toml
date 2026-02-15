@@ -1,0 +1,13 @@
+name = "prontopdf"
+main = "dist/index.cjs"
+compatibility_date = "2024-12-16"
+
+[build]
+command = "npm run build:client"
+cwd = "."
+
+[env.production]
+routes = [{ pattern = "example.com", zone_name = "example.com" }]
+
+[observability]
+enabled = true

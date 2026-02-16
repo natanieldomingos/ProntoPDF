@@ -1,7 +1,7 @@
 import React from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import BottomNav from "@/components/bottom-nav";
-import SidebarNav from "@/components/sidebar-nav";
+import TopAppBar from "@/components/top-app-bar";
 
 type Props = {
   children: React.ReactNode;
@@ -25,11 +25,11 @@ export default function AppShell({ children, hideBottomNav }: Props) {
     );
   }
 
-  // Desktop: Sidebar (fixed left) + main content
+  // Desktop: Top App Bar + main content
   return (
-    <div className="min-h-screen bg-background flex">
-      {!hideBottomNav && <SidebarNav />}
-      <main className="flex-1 ml-[--sidebar-width:0] data-[sidebar]:ml-[16rem] overflow-y-auto">
+    <div className="min-h-screen bg-background flex flex-col">
+      <TopAppBar />
+      <main className="flex-1 overflow-y-auto">
         <div className="p-6 max-w-7xl mx-auto">
           {children}
         </div>

@@ -5,7 +5,7 @@ import AppShell from "@/components/app-shell";
 import { useScan } from "@/lib/scan-context";
 import { listProjects } from "@/lib/storage";
 import type { ProjectRecord } from "@/lib/storage";
-import { Camera, FileText, Search, Plus, ChevronRight, Zap } from "lucide-react";
+import { Camera, FileText, Search, Plus, ChevronRight, Zap, FolderOpen } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const formatUpdatedAt = (iso: string) => {
@@ -82,53 +82,59 @@ export default function Home() {
         </header>
 
         {/* Action Cards Grid */}
-        <section className={isMobile ? "px-6 pb-6 space-y-3" : "px-6 pb-8 grid grid-cols-2 gap-4 max-w-2xl"}>
-          {/* Primary Action: Scan */}
+        <section className={isMobile ? "px-6 pb-6 space-y-3" : "px-6 pb-8 grid grid-cols-2 gap-5 max-w-2xl"}>
+          {/* Primary Action: Scan - Google Blue */}
           <button
             onClick={startScan}
             className={`
-              group relative overflow-hidden rounded-xl bg-primary text-on-primary
-              shadow-elevation-2 transition-all duration-300
-              hover:shadow-elevation-4 hover:-translate-y-1
+              group relative overflow-hidden bg-gradient-to-br from-primary to-primary/90
+              text-on-primary rounded-2xl
+              shadow-elevation-3 transition-all duration-300
+              hover:shadow-elevation-5 hover:-translate-y-1.5 hover:scale-105
               focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary
-              ${isMobile ? "w-full py-6" : "py-8"}
+              active:shadow-elevation-1 active:scale-95
+              ${isMobile ? "w-full py-7" : "py-10"}
             `}
             aria-label="Iniciar nova digitalização com câmera"
           >
             {/* Ripple effect background */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 group-active:opacity-20 bg-white transition-opacity" />
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-15 group-active:opacity-25 bg-white transition-opacity duration-300" />
             
             <div className="relative flex flex-col items-center justify-center gap-3">
-              <div className="p-3 bg-white/20 rounded-full">
-                <Camera className="h-6 w-6" strokeWidth={2} />
+              <div className="p-4 bg-white/25 rounded-full backdrop-blur-sm transition-all duration-300 group-hover:scale-110 group-hover:bg-white/35">
+                <Camera className="h-7 w-7" strokeWidth={2.5} />
               </div>
               <div>
-                <h3 className="text-lg font-semibold">Digitalize</h3>
-                <p className="text-sm opacity-90">Usar câmera</p>
+                <h3 className="text-lg font-bold">Digitalizar</h3>
+                <p className="text-sm opacity-95 font-medium">Câmera</p>
               </div>
             </div>
           </button>
 
-          {/* Secondary Action: Import */}
+          {/* Secondary Action: Browse Files */}
           <button
             onClick={() => setLocation("/files")}
             className={`
-              group relative overflow-hidden rounded-xl bg-secondary/20 border border-secondary
-              text-on-surface shadow-elevation-1 transition-all duration-300
-              hover:shadow-elevation-3 hover:bg-secondary/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary
-              ${isMobile ? "w-full py-6" : "py-8"}
+              group relative overflow-hidden rounded-2xl
+              bg-surface-variant border-2 border-outline-variant
+              text-on-surface shadow-elevation-2 transition-all duration-300
+              hover:shadow-elevation-4 hover:-translate-y-1.5 
+              hover:bg-surface-variant/80 hover:border-primary/40
+              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary
+              active:shadow-elevation-1 active:scale-95
+              ${isMobile ? "w-full py-7" : "py-10"}
             `}
             aria-label="Importar arquivo da biblioteca"
           >
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-5 bg-primary transition-opacity" />
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-8 bg-primary transition-opacity duration-300" />
             
             <div className="relative flex flex-col items-center justify-center gap-3">
-              <div className="p-3 bg-primary/10 rounded-full">
-                <Plus className="h-6 w-6 text-primary" strokeWidth={2} />
+              <div className="p-4 bg-primary/15 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:bg-primary/25">
+                <FolderOpen className="h-7 w-7 text-primary" strokeWidth={2.5} />
               </div>
               <div>
-                <h3 className="text-lg font-semibold">Importar</h3>
-                <p className="text-sm text-on-surface-variant">Arquivo existente</p>
+                <h3 className="text-lg font-bold text-on-surface">Meus Arquivos</h3>
+                <p className="text-sm text-on-surface-variant font-medium">Biblioteca</p>
               </div>
             </div>
           </button>
@@ -136,13 +142,13 @@ export default function Home() {
 
         {/* Search Bar */}
         <section className={isMobile ? "px-6 pb-6" : "px-6 pb-8"}>
-          <div className="relative max-w-xl">
-            <Search className="h-5 w-5 text-on-surface-variant absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <div className="relative max-w-2xl">
+            <Search className="h-5 w-5 text-on-surface-variant absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-300" />
             <input
               type="search"
-              className="w-full rounded-xl border border-outline-variant bg-surface pl-12 pr-4 py-3 text-body-medium
-              placeholder:text-on-surface-variant focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30
-              transition-all duration-200"
+              className="w-full rounded-full border-2 border-outline-variant bg-surface pl-14 pr-5 py-3.5 text-base font-medium
+              placeholder:text-on-surface-variant focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30
+              transition-all duration-300 shadow-elevation-1 hover:shadow-elevation-2"
               placeholder="Buscar documentos…"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
@@ -192,36 +198,37 @@ export default function Home() {
 
           {/* Recent Documents Grid */}
           {visibleProjects.length > 0 && (
-            <div className={isMobile ? "space-y-3" : "grid grid-cols-2 gap-4"}>
+            <div className={isMobile ? "space-y-3 animate-slide-in" : "grid grid-cols-2 gap-4 animate-slide-in"}>
               {visibleProjects.map((project) => (
                 <button
                   key={project.id}
                   onClick={() => openDoc(project.id)}
                   className={`
-                    group text-left rounded-xl border border-outline-variant bg-surface p-4
-                    shadow-elevation-1 transition-all duration-300
-                    hover:shadow-elevation-3 hover:border-primary/30 hover:-translate-y-0.5
+                    group text-left rounded-2xl border-2 border-outline-variant bg-surface p-5
+                    shadow-elevation-2 transition-all duration-300
+                    hover:shadow-elevation-4 hover:border-primary/30 hover:-translate-y-1.5
+                    hover:bg-surface active:shadow-elevation-1 active:scale-95
                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary
                   `}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="p-1.5 bg-primary/10 rounded-md flex-shrink-0">
-                          <FileText className="h-4 w-4 text-primary" />
+                      <div className="flex items-center gap-2.5 mb-2.5">
+                        <div className="p-2 bg-primary/15 rounded-lg flex-shrink-0 transition-all duration-300 group-hover:bg-primary/25">
+                          <FileText className="h-5 w-5 text-primary" />
                         </div>
-                        <h3 className="font-semibold text-headline-small truncate group-hover:text-primary transition-colors">
+                        <h3 className="font-bold text-title-medium truncate group-hover:text-primary transition-colors">
                           {project.name}
                         </h3>
                       </div>
-                      <p className="text-xs text-on-surface-variant">
+                      <p className="text-xs font-medium text-on-surface-variant">
                         {project.pageCount} {project.pageCount === 1 ? "página" : "páginas"}
                       </p>
-                      <p className="text-xs text-on-surface-variant mt-1">
+                      <p className="text-xs text-on-surface-variant/70 mt-1.5">
                         {formatUpdatedAt(project.updatedAt)}
                       </p>
                     </div>
-                    <ChevronRight className="h-5 w-5 text-on-surface-variant group-hover:text-primary transition-colors flex-shrink-0 mt-1" />
+                    <ChevronRight className="h-6 w-6 text-on-surface-variant group-hover:text-primary transition-all duration-300 group-hover:translate-x-0.5 flex-shrink-0 mt-1" />
                   </div>
                 </button>
               ))}

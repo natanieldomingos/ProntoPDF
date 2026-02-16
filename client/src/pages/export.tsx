@@ -281,7 +281,6 @@ export default function ExportPage() {
           pdf.setFontSize(fontSize);
           pdf.text(text, x, y, {
             baseline: "bottom",
-            renderingMode: 3,
             maxWidth,
           });
         }

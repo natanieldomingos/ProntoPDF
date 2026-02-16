@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRoute, useLocation } from "wouter";
 import { useScan } from "@/lib/scan-context";
-import CameraView from "@/components/camera-view";
+import { useIsMobile } from "@/hooks/use-mobile";
 import ImageEditor from "@/components/image-editor";
+import CameraView from "@/components/camera-view";
 import { Button } from "@/components/ui/button";
 import { Trash2, Edit2, Plus, ArrowRight, ArrowLeft, Camera, Image as ImageIcon, AlertCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -11,6 +12,7 @@ import { runDocumentPipeline } from "@/lib/vision/documentPipeline";
 type PermissionState = "idle" | "requesting" | "granted" | "denied";
 
 export default function ScannerPage() {
+  const isMobile = useIsMobile();
   const [, scanParams] = useRoute("/scan/:subpath?");
   const [docMatch, docParams] = useRoute("/doc/:id/:subpath?");
 
@@ -154,33 +156,38 @@ export default function ScannerPage() {
     );
   }
 
-  // Fluxo: se está na rota /camera, mostrar permissão primeiro, depois câmera
-  if (((!docMatch && routeSubpath === "camera") || (docMatch && routeSubpath === "camera"))) {
+  // Remover acesso à câmera no desktop
+  if (!isMobile && ((routeSubpath === "camera") || (docMatch && routeSubpath === "camera"))) {
+    setLocation("/files");
+    return null;
+  }
+  // Mobile: fluxo de câmera permanece igual
+  if (isMobile && ((routeSubpath === "camera") || (docMatch && routeSubpath === "camera"))) {
     // Se já concedeu, mostrar câmera
     if (permissionState === "granted") {
+
       return <CameraView onCapture={handleCapture} closeHref={docMatch ? reviewPath : "/"} />;
     }
-
     // Se negou, mostrar fallback com importar
     if (permissionState === "denied") {
       return (
-        <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="min-h-screen bg-background flex items-center justify-center p-6 animate-fade-in">
           <div className="max-w-md w-full">
-            <div className="rounded-xl border border-outline-variant bg-surface p-6 space-y-4 text-center">
-              <div className="w-16 h-16 mx-auto bg-error/10 rounded-full flex items-center justify-center">
-                <AlertCircle className="w-8 h-8 text-error" />
+            <div className="rounded-2xl border-2 border-outline-variant bg-surface p-8 space-y-4 text-center shadow-elevation-3">
+              <div className="w-20 h-20 mx-auto bg-error/10 rounded-full flex items-center justify-center animate-scale-in border-2 border-error/20">
+                <AlertCircle className="w-10 h-10 text-error" />
               </div>
-              <h2 className="text-headline-small font-semibold">Câmera não disponível</h2>
+              <h2 className="text-headline-small font-bold text-on-surface">Câmera não permitida</h2>
               <p className="text-body-medium text-on-surface-variant">
-                A câmera não foi permitida ou não está disponível neste dispositivo. Use a importação em vez disso.
+                Câmera indisponível. Importe fotos ou PDFs da galeria em vez disso.
               </p>
-              <div className="space-y-2 pt-2">
+              <div className="space-y-3 pt-2">
                 <Button
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full flex items-center justify-center gap-2"
+                  className="w-full h-12 rounded-full flex items-center justify-center gap-2 font-semibold shadow-elevation-2 hover:shadow-elevation-4 hover:-translate-y-0.5"
                 >
-                  <ImageIcon className="w-4 h-4" />
-                  Importar imagem/PDF
+                  <ImageIcon className="w-5 h-5" />
+                  Importar imagem ou PDF
                 </Button>
                 <input
                   type="file"
@@ -192,7 +199,7 @@ export default function ScannerPage() {
                 <Button
                   onClick={() => setLocation(docMatch ? reviewPath : "/")}
                   variant="outline"
-                  className="w-full"
+                  className="w-full h-12 rounded-full font-semibold"
                 >
                   Cancelar
                 </Button>
@@ -202,46 +209,42 @@ export default function ScannerPage() {
         </div>
       );
     }
-
     // Pedindo permissão ou estado idle: mostrar tela de pedido
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <div className="min-h-screen bg-background flex items-center justify-center p-6 animate-fade-in">
         <div className="max-w-md w-full">
-          <div className="rounded-xl border border-outline-variant bg-surface p-6 space-y-6">
-            <div className="flex items-center justify-center">
-              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
-                <Camera className="w-10 h-10 text-primary" />
+          <div className="rounded-2xl border-2 border-outline-variant bg-surface p-8 space-y-6 shadow-elevation-3">
+            <div className="flex items-center justify-center animate-scale-in">
+              <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-primary/10 rounded-full flex items-center justify-center">
+                <Camera className="w-12 h-12 text-primary" />
               </div>
             </div>
-
             <div className="text-center space-y-2">
-              <h2 className="text-headline-small font-semibold">Usar câmera para escanear</h2>
+              <h2 className="text-headline-small font-bold text-on-surface">Digitalizar com câmera</h2>
               <p className="text-body-medium text-on-surface-variant">
-                Para digitalizar documentos, permitimos acesso à câmera do dispositivo.
+                Permita acesso à câmera para capturar e processar seus documentos.
               </p>
             </div>
-
-            <div className="bg-surface-variant/50 rounded-lg p-4 space-y-2">
-              <h3 className="text-label-medium font-semibold">O que vamos fazer:</h3>
-              <ul className="text-body-small text-on-surface-variant space-y-1">
-                <li>✓ Capturar fotos dos documentos</li>
-                <li>✓ Detectar bordas automaticamente</li>
-                <li>✓ Reconhecer texto (OCR)</li>
+            <div className="bg-primary/5 rounded-xl p-4 space-y-2 border border-primary/20">
+              <h3 className="text-label-large font-semibold text-on-surface">Recursos:</h3>
+              <ul className="text-label-medium text-on-surface-variant space-y-1.5">
+                <li className="flex items-center gap-2"><span className="text-primary font-bold">✓</span> Captura de fotos</li>
+                <li className="flex items-center gap-2"><span className="text-primary font-bold">✓</span> Detecção automática de bordas</li>
+                <li className="flex items-center gap-2"><span className="text-primary font-bold">✓</span> Reconhecimento de texto</li>
               </ul>
             </div>
-
-            <div className="space-y-3">
+            <div className="space-y-3 pt-2">
               <Button
                 onClick={requestCameraPermission}
                 disabled={permissionState === "requesting"}
-                className="w-full h-12"
+                className="w-full h-12 rounded-full font-semibold shadow-elevation-2 hover:shadow-elevation-4 hover:-translate-y-0.5"
               >
                 {permissionState === "requesting" ? "Aguardando permissão…" : "Permitir câmera"}
               </Button>
               <Button
                 onClick={() => setLocation(docMatch ? reviewPath : "/")}
                 variant="outline"
-                className="w-full"
+                className="w-full h-12 rounded-full font-semibold"
               >
                 Cancelar
               </Button>
@@ -254,27 +257,27 @@ export default function ScannerPage() {
 
   if (docMatch && pages.length === 0) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
-        <header className="bg-surface border-b border-outline-variant p-4 sticky top-0 z-10 shadow-elevation-1">
+      <div className="min-h-screen bg-background flex flex-col animate-fade-in">
+        <header className="bg-surface border-b-2 border-outline-variant p-4 sticky top-0 z-10 shadow-elevation-2">
           <div className="flex items-center justify-between max-w-4xl mx-auto">
-            <Button variant="ghost" onClick={() => setLocation("/")} className="text-on-surface-variant">
+            <Button variant="ghost" onClick={() => setLocation("/")} className="text-on-surface-variant hover:bg-primary/10 rounded-full">
               <ArrowLeft className="w-5 h-5 mr-1" /> Voltar
             </Button>
-            <span className="font-semibold text-title-medium">Nenhuma página</span>
+            <span className="font-bold text-title-medium text-on-surface">Sem páginas</span>
             <div className="w-[72px]" />
           </div>
         </header>
 
         <main className="flex-1 p-6 max-w-md mx-auto w-full flex flex-col items-center justify-center">
-          <div className="rounded-xl border border-outline-variant bg-surface-variant/40 p-8 text-center mb-6">
-            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <Plus className="h-6 w-6 text-primary" />
+          <div className="rounded-2xl border-2 border-outline-variant bg-surface-variant/30 p-8 text-center mb-6 animate-scale-in">
+            <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/20">
+              <Plus className="h-8 w-8 text-primary" />
             </div>
             <p className="text-body-medium text-on-surface-variant">
-              Nenhuma página ainda. Toque em <strong>Adicionar página</strong> para começar.
+              Comece digitalizando um documento.
             </p>
           </div>
-          <Button className="w-full h-12" onClick={() => setLocation(`${cameraPath}?mode=${mode}`)}>
+          <Button className="w-full h-12 rounded-full font-semibold shadow-elevation-2 hover:shadow-elevation-4 hover:-translate-y-0.5" onClick={() => setLocation(`${cameraPath}?mode=${mode}`)}>
             <Camera className="w-5 h-5 mr-2" /> Adicionar página
           </Button>
         </main>
